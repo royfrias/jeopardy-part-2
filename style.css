@@ -47,11 +47,11 @@ body {
   box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
 }
 
-.page-items>a {
+.page-items > a {
   border: 2px solid black;
   width: 8%;
   padding: 8px;
-  cursor: pointerf;
+  cursor: pointer;
   margin-bottom: 10px;
   text-decoration: none;
   font-size: 20px;
@@ -121,24 +121,25 @@ h3 {
   /* background-color: #D3D3D3; */
 }
 
-.input-div>input {
+.input-div > input {
   border: 2px solid black;
-  width: 16%;
+  width: 20%;
   height: 40px;
   margin: 0 auto;
   margin-top: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   text-align: center;
 }
 
-.input-div>div>a {
+.input-div > div > button {
   border: 2px solid black;
-  width: 25%;
+  width: 20%;
   padding: 12px;
-  margin: 20px;
+  cursor: pointer;
+  margin: 10px;
   margin-bottom: 10px;
   text-decoration: none;
-  /* margin: 10px; */
+  border-radius: 5px;
   color: black;
   background-color: chocolate;
 }
@@ -157,16 +158,17 @@ h3 {
   justify-content: flex-end;
 }
 
-.next-round-btn>a {
-  border: 2px solid black;
-  width: 8%;
-  margin-right: 100px;
-  padding: 8px;
-  /* margin: 20px; */
+.next-round-btn > button {
   margin-bottom: 10px;
   text-decoration: none;
   font-size: 20px;
-  /* margin: 10px; */
+  border: 2px solid black;
+  border-radius: 5px;
+  width: 15%;
+  padding: 12px;
+  margin: 10px;
+  margin-bottom: 10px;
+  text-decoration: none;
   color: black;
   background-color: chocolate;
 }
