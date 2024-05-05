@@ -6,7 +6,6 @@ const gridItems = document.querySelectorAll(".grid-items");
 const guessButton = document.getElementById("guess-btn");
 const passButton = document.getElementById("pass-btn");
 const nextButton = document.querySelector("#next-round");
-const nextButton2 = document.querySelector("#next-round-2");
 
 
 // this gives me the players so that I can use this to
@@ -22,7 +21,6 @@ let answeredQuestions = [];
 let selectedPoints = 0;
 let selectedQuestion;
 let selectedGridItem;
-console.log(answeredQuestions);
 
 //This code allows me to click the play button and
 //ReDirect me to round-1 page. And display that
@@ -88,7 +86,6 @@ function renderCategories() {
       uniqueCategories.push(category);
     }
   });
-
   //this loops through my category items divs and assigns the proper category name
   // ex. [=NATURE=] [=ANIMALS=] [=COMPUTERS=] [=MYTHOLOGY=] [=HISTORY=] [=GENERAL=] etc etc..
   categoryItems.forEach((element, indx) => {
@@ -96,11 +93,20 @@ function renderCategories() {
   });
 }
 
+
+// renderQuestion function is in charge of listening to clicks on the gridItems & 
+// checks an unanswered question which the player then can answer
 function renderQuestions() {
+  // iterate through each gridItem in the gridItem using the forEach method
   gridItems.forEach((item) => {
+    // we then check that the textContent of the chosen gridItem is not chosen or included in the answeredQuestions array i created
     if (!answeredQuestions.includes(item.textContent)) {
       item.addEventListener("click", () => {
+
+      // we then check if a question is not already answered while making sure the specific
+      // item doesn have the category-items class
         if (!questionAnswered && !item.classList.contains("category-items")) {
+          //we then filter out any unanswered questions from the categorQuestions
           const category = item.dataset.category;
           const categoryQuestions = placeholderQuestions.filter(
             (question) => question.category === category
@@ -109,22 +115,23 @@ function renderQuestions() {
             (question) => !answeredQuestions.includes(question)
           );
 
+          // we then randomize our questions through out the gridItems on the browser
+          // based on our unAnsweredQuestions length basically displaying all of the grid with the hidden questions 
           if (unAnsweredQuestions.length > 0) {
             const randomQuestion = Math.floor(
               Math.random() * unAnsweredQuestions.length
             );
             selectedQuestion = unAnsweredQuestions[randomQuestion];
-            item.textContent = `${selectedQuestion.question}`;
-            questionAnswered = true;
-            answeredQuestions.push(selectedQuestion);
+            item.textContent = `${selectedQuestion.question}`; // shows the question of the clicked gridItem
+            questionAnswered = true; // adds question as i answered it
+            answeredQuestions.push(selectedQuestion); // and then pushes it to the answeredQuestions array []
 
-            selectedPoints = parseInt(item.getAttribute("value"));
+            selectedPoints = parseInt(item.getAttribute("value")); // this gives me the points value which i get from getAttribute method
             console.log(category);
             console.log("Clicked grid item textContent:", item.textContent); // log the textContent
             console.log("Points:", selectedPoints);
-            !enableButtons();
 
-            selectedGridItem = item;
+            selectedGridItem = item; // this assigns a gridItem the value that it was already chosen and the question answered, which will then leave that especific grid item blank
           }
         }
       });
