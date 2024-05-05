@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@400;500;600;700&display=swap">
@@ -53,24 +53,25 @@
         <div class="grid-items">1000</div>
       </div>
       
-      <div class="input-div">
-        <input type="text" placeholder="User Input...">
+      <form class="input-div">
+        <input id="input-div"" type=" text" placeholder="User Input...">
         <div>
-          <a href="#">GUESS</a>
-          <a href="#">PASS</a>
+          <button id="guess-btn" disabled href="#">GUESS</button>
+          <button id="pass-btn" disabled href="#">PASS</button>
         </div>
-      </div>
+      </form>
       
       <div class="player-score">
-        <p>Player 1 Score: 0</p>
-        <p>Player 2 Score: 0</p>
+        <p id="player1score">Player 1 Score: 0</p>
+      
+        <p id="player2score">Player 2 Score: 0</p>
       </div>
       
-      <div class="next-round-btn">
-        <!-- <a class="btn-none" href="#">Next Round</a> -->
-        <a href="final-jeopardy.html">Next Round</a>
+      <div class="next-round-btn-2">
+        <button id="next-round-2" href="final-jeopardy.html">Final Round</button>
       </div>
-      
+
+
       <div class="footer">
         <h2>FOOTER SITE INFORMATION</h2>
       </div>

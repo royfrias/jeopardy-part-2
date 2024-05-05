@@ -1,14 +1,15 @@
 // Do not change the import statement
 import placeholderQuestions from "./placeholder-questions.js";
-// console.log({ placeholderQuestions });
-
 
 // selecting my elements
 const gridItems = document.querySelectorAll(".grid-items");
 const guessButton = document.getElementById("guess-btn");
 const passButton = document.getElementById("pass-btn");
-const nextbutton = document.querySelector("#next-round");
-// this gives me the players so that I can use this to 
+const nextButton = document.querySelector("#next-round");
+const nextButton2 = document.querySelector("#next-round-2");
+
+
+// this gives me the players so that I can use this to
 // alternate between player 1 and 2 and also use the score.
 const players = [
   { name: "Player 1", score: 0 },
@@ -17,29 +18,35 @@ const players = [
 
 let questionAnswered = false;
 let currentPlayerIndex = 0;
+let answeredQuestions = [];
+let selectedPoints = 0;
+let selectedQuestion;
+let selectedGridItem;
+console.log(answeredQuestions);
 
-
-
-//This code allows me to click the play button and 
-//ReDirect me to round-1 page. And display that 
+//This code allows me to click the play button and
+//ReDirect me to round-1 page. And display that
 //It is players 1 turn!
 function eachplayersTurn() {
   const playersTurn = document.getElementById("players-turn");
-  // let playButton = document.getElementById("play");
   const currentPlayer = players[currentPlayerIndex];
-  // console.log(currentPlayer);
   playersTurn.textContent = `${currentPlayer.name}'s turn`;
   currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
 }
 
-
-passButton.addEventListener('click', ()=>{
+passButton.addEventListener("click", (e) => {
+  e.preventDefault();
   console.log("Im passing on the question");
-    eachplayersTurn();
+  eachplayersTurn();
 });
 
+nextButton.addEventListener('click', (e) =>{
+  window.location.href = "round-2.html";
+})
+
+
 // ENABLE BUTTONS function()
-function enableButtons(){
+function enableButtons() {
   const guessButton = document.getElementById("guess-btn");
   const passButton = document.getElementById("pass-btn");
   const nextbutton = document.querySelector(".next-round-btn");
@@ -49,141 +56,126 @@ function enableButtons(){
   nextbutton.disabled = false;
 }
 
+function disableButtons() {
+  const guessButton = document.getElementById("guess-btn");
+  const passButton = document.getElementById("pass-btn");
+  const nextbutton = document.querySelector(".next-round-btn");
 
-// // This function updates the player score
-function updateScore(player, points){
-  // console.log(player);
-  // console.log(points);
-    player.score += parseInt(points); 
-    console.log(`${player.name}'s score: ${player.score}`)
+  guessButton.disabled = true;
+  passButton.disabled = true;
+  nextbutton.disabled = true;
 }
 
-
-// forEach loop in order to loop through all the grid items and get all of the 
-// points value from all of the grid-items such as 100, 200 , 300, 400, 500
-function savePoints(){
-    const pointsArray = [];
-    gridItems.forEach((gridItem) => {
-      if (!gridItem.classList.contains("category-items")) {
-        const pointsText = gridItem.textContent;
-        const points = parseInt(pointsText);
-        // console.log(points);
-        pointsArray.push(points);
-      }
-    });
-    // console.log(pointsArray);
-    return pointsArray;
+// This function updates the player score
+function updateScore(playerIndex, points) {
+  players[playerIndex].score += parseInt(points);
+  console.log(
+    `${players[playerIndex].name}'s score: ${players[playerIndex].score}`
+  );
 }
-
 
 // this function renders the categories on the top of the page
 // first line where it gives you all the categories
 function renderCategories() {
-    // This variable selects the six categorys divs.
-    const categoryItems = document.querySelectorAll(".category-items");
+  // This variable selects the six categorys divs.
+  const categoryItems = document.querySelectorAll(".category-items");
+  const categoryNames = placeholderQuestions.map(
+    (question) => question.category
+  );
+  const uniqueCategories = [];
+  categoryNames.forEach((category) => {
+    if (!uniqueCategories.includes(category)) {
+      uniqueCategories.push(category);
+    }
+  });
 
-    // This variable loops through the array of objects and picks out the categories
-    // from the object
-    const categoryNames = placeholderQuestions.map((question) => question.category);
-    // console.log(categoryNames)
-    // we then declare a empty array so that we can push 
-    // the categories into the array
-    const uniqueCategories = [];
-    categoryNames.forEach((category) => {
-      // console.log(category)
-      if (!uniqueCategories.includes(category)) {
-        uniqueCategories.push(category);
-      }
-      // console.log(uniqueCategories)s
-    });
-
-    //this loops through my category items divs and assigns the proper category name
-    // ex. [=NATURE=] [=ANIMALS=] [=COMPUTERS=] [=MYTHOLOGY=] [=HISTORY=] [=GENERAL=] etc etc..
-    categoryItems.forEach((element, indx) => {
-      // console.log(element);
-      // console.log(indx);
-       element.textContent = uniqueCategories[indx];
-    });
-}
-
-
-function renderQuestions() {
-  // const categories = document.querySelectorAll(".category-items");
-  const gridItems = document.querySelectorAll(".grid-items");
-  // this loop will loop around a p
-  gridItems.forEach((item) => {
-  item.addEventListener("click", () => {
-
-   if(!questionAnswered) {
-    //this variable will give you a category based on what you click
-    //if you click a Animals selection for the question on the browser
-    //it will give you that based on the category.
-    const category = item.dataset.category;
-    console.log(category);
-    //This Variable with the filter method basically filters the questions from each
-    //category, So if you go to the Animals category it will loop and filter out all of the 
-    //questions on the Animals category that are on the placeholderQuestions Object
-    const categoryQuestions = placeholderQuestions.filter((question) => question.category === category);
-  
-    console.log(categoryQuestions);
-
-    //this variable here practically randomizes my questions
-    // so when i refresh the questions are randomized on the browser
-    const randomQuestion = Math.floor(
-      Math.random() * categoryQuestions.length
-    );
-    const selectedQuestion = categoryQuestions[randomQuestion];
-    // console.log(selectedQuestion);
-    item.textContent = `${selectedQuestion.question}`;
-
-    questionAnswered = true;
-
-
-    //this code will allow us once we choose the question 
-    //for what ever category, we will be able to input it 
-    //and submit it via the input we have. It will then 
-    //console.log if the answer is correct or wrong.
-    const guessButton = document.querySelector("#guess-btn");
-    guessButton.addEventListener('click', ()=> {
-      const userInput = document.querySelector("#input-div").value;
-      enableButtons();
-      if(userInput.trim().toLowerCase() === selectedQuestion.answer.toLowerCase()) {
-        console.log("Your Answer Is Correct!");
-        updateScore(players[currentPlayerIndex], selectedQuestion.points);
-        renderPlayerScores();
-        eachplayersTurn();
-        enableButtons();
-      } else {
-        console.group("Your Answer is Wrong!!");
-        eachplayersTurn();
-        enableButtons();
-      }
- });
-  
-
-  // this function renders the scores of each player 
-  function renderPlayerScores(){
-      const player1score = document.querySelector("#player1score");
-      const player2score = document.querySelector("#player2score");
-
-      player1score.textContent = `Player 1 Score : ${players[0].score}`
-      player2score.textContent = `Player 2 Score : ${players[1].score}`;
-
-      console.log(
-        (player1score.textContent = `Player 1 Score : ${players[0].score}`)
-      );
-  }
-
-      }
-    });
+  //this loops through my category items divs and assigns the proper category name
+  // ex. [=NATURE=] [=ANIMALS=] [=COMPUTERS=] [=MYTHOLOGY=] [=HISTORY=] [=GENERAL=] etc etc..
+  categoryItems.forEach((element, indx) => {
+    element.textContent = uniqueCategories[indx];
   });
 }
+
+function renderQuestions() {
+  gridItems.forEach((item) => {
+    if (!answeredQuestions.includes(item.textContent)) {
+      item.addEventListener("click", () => {
+        if (!questionAnswered && !item.classList.contains("category-items")) {
+          const category = item.dataset.category;
+          const categoryQuestions = placeholderQuestions.filter(
+            (question) => question.category === category
+          );
+          const unAnsweredQuestions = categoryQuestions.filter(
+            (question) => !answeredQuestions.includes(question)
+          );
+
+          if (unAnsweredQuestions.length > 0) {
+            const randomQuestion = Math.floor(
+              Math.random() * unAnsweredQuestions.length
+            );
+            selectedQuestion = unAnsweredQuestions[randomQuestion];
+            item.textContent = `${selectedQuestion.question}`;
+            questionAnswered = true;
+            answeredQuestions.push(selectedQuestion);
+
+            selectedPoints = parseInt(item.getAttribute("value"));
+            console.log(category);
+            console.log("Clicked grid item textContent:", item.textContent); // log the textContent
+            console.log("Points:", selectedPoints);
+            !enableButtons();
+
+            selectedGridItem = item;
+          }
+        }
+      });
+    }
+  });
+}
+
+// Function to render the scores of each player
+function renderPlayerScores() {
+  const player1score = document.querySelector("#player1score");
+  const player2score = document.querySelector("#player2score");
+
+  player1score.textContent = `Player 1 Score: ${players[0].score}`;
+  player2score.textContent = `Player 2 Score: ${players[1].score}`;
+}
+
+// Event listener for guess button
+guessButton.addEventListener("click", (e) => {
+  e.preventDefault();
+  const userInput = document.getElementById("input-div").value;
+  if (
+    userInput.trim().toLowerCase() === selectedQuestion.answer.toLowerCase()
+  ) {
+    console.log("Your Answer Is Correct!");
+    console.log(selectedPoints);
+    eachplayersTurn();
+    updateScore(currentPlayerIndex, selectedPoints); // update player's scores
+    renderPlayerScores(); // renders updated scores
+    disableButtons(); // disable buttons after answering
+
+    answeredQuestions.push(selectedQuestion); // pushes answered questions to array []
+    selectedGridItem.textContent = ""; // clears out 
+
+    const remainingQuestions = placeholderQuestions.filter(
+      (question) => !answeredQuestions.includes(question)
+    );
+    if (remainingQuestions.length > 0) {
+      questionAnswered = false;
+      renderQuestions();
+    } else {
+      console.log("NO more questions remaining!");
+    }
+  } else {
+    console.group("Your Answer is Wrong!!");
+    eachplayersTurn();
+    disableButtons(); // disables buttons after answering
+  }
+});
 
 //calling my functions()
 renderCategories();
 renderQuestions();
 eachplayersTurn();
 enableButtons();
-updateScore(players[0], savePoints());
-updateScore(players[1], savePoints());
-savePoints();
