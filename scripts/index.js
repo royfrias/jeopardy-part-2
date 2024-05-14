@@ -7,7 +7,6 @@ const guessButton = document.getElementById("guess-btn");
 const passButton = document.getElementById("pass-btn");
 const nextButton = document.querySelector("#next-round");
 
-
 // this gives me the players so that I can use this to
 // alternate between player 1 and 2 and also use the score.
 const players = [
@@ -17,8 +16,8 @@ const players = [
 
 let questionAnswered = false;
 let currentPlayerIndex = 0;
-let answeredQuestions = [];
 let selectedPoints = 0;
+let answeredQuestions = []
 let selectedQuestion;
 let selectedGridItem;
 
@@ -38,30 +37,21 @@ passButton.addEventListener("click", (e) => {
   eachplayersTurn();
 });
 
-nextButton.addEventListener('click', (e) =>{
+nextButton.addEventListener("click", (e) => {
   window.location.href = "round-2.html";
-})
-
+});
 
 // ENABLE BUTTONS function()
 function enableButtons() {
-  const guessButton = document.getElementById("guess-btn");
-  const passButton = document.getElementById("pass-btn");
-  const nextbutton = document.querySelector(".next-round-btn");
-
   guessButton.disabled = false;
   passButton.disabled = false;
-  nextbutton.disabled = false;
+  nextButton.disabled = false;
 }
 
 function disableButtons() {
-  const guessButton = document.getElementById("guess-btn");
-  const passButton = document.getElementById("pass-btn");
-  const nextbutton = document.querySelector(".next-round-btn");
-
   guessButton.disabled = true;
   passButton.disabled = true;
-  nextbutton.disabled = true;
+  nextButton.disabled = true;
 }
 
 // This function updates the player score
@@ -93,51 +83,64 @@ function renderCategories() {
   });
 }
 
-
-// renderQuestion function is in charge of listening to clicks on the gridItems & 
+// renderQuestion function is in charge of listening to clicks on the gridItems &
 // checks an unanswered question which the player then can answer
 function renderQuestions() {
-  // iterate through each gridItem in the gridItem using the forEach method
+  answeredQuestions = [];
+  
+  // Define a function to handle the click event
+  const handleClick = (item) => {
+    // Check if a question is not already answered and the item is not a category
+    if (!questionAnswered && !item.classList.contains("category-items")) {
+      // Filter out any unanswered questions from the category
+      const category = item.dataset.category;
+      const unAnsweredQuestions = placeholderQuestions.filter(
+        (question) =>
+          question.category === category &&
+          !answeredQuestions.includes(question.id)
+      );
+
+      // If there are unanswered questions
+      if (unAnsweredQuestions.length > 0) {
+        // Select a random question
+        const randomQuestion =
+          Math.floor(Math.random() * unAnsweredQuestions.length);
+        selectedQuestion = unAnsweredQuestions[randomQuestion];
+
+        // Update the selected grid item
+        selectedGridItem = item;
+
+        // Display the question text
+        item.textContent = `${selectedQuestion.question}`;
+
+        // Set the points value
+        selectedPoints = parseInt(item.getAttribute("value"));
+
+        // Mark the question as answered
+        questionAnswered = true;
+
+        // Add the answered question ID to the list
+        answeredQuestions.push(selectedQuestion.id);
+
+        // Remove the click event listener from the item
+        item.removeEventListener("click", handleClick);
+
+        // Enable buttons
+        enableButtons();
+      }
+    }
+  };
+
+  // Iterate through each grid item
   gridItems.forEach((item) => {
-    // we then check that the textContent of the chosen gridItem is not chosen or included in the answeredQuestions array i created
-    if (!answeredQuestions.includes(item.textContent)) {
-      item.addEventListener("click", () => {
-
-      // we then check if a question is not already answered while making sure the specific
-      // item doesn have the category-items class
-        if (!questionAnswered && !item.classList.contains("category-items")) {
-          //we then filter out any unanswered questions from the categorQuestions
-          const category = item.dataset.category;
-          const categoryQuestions = placeholderQuestions.filter(
-            (question) => question.category === category
-          );
-          const unAnsweredQuestions = categoryQuestions.filter(
-            (question) => !answeredQuestions.includes(question)
-          );
-
-          // we then randomize our questions through out the gridItems on the browser
-          // based on our unAnsweredQuestions length basically displaying all of the grid with the hidden questions 
-          if (unAnsweredQuestions.length > 0) {
-            const randomQuestion = Math.floor(
-              Math.random() * unAnsweredQuestions.length
-            );
-            selectedQuestion = unAnsweredQuestions[randomQuestion];
-            item.textContent = `${selectedQuestion.question}`; // shows the question of the clicked gridItem
-            questionAnswered = true; // adds question as i answered it
-            answeredQuestions.push(selectedQuestion); // and then pushes it to the answeredQuestions array []
-
-            selectedPoints = parseInt(item.getAttribute("value")); // this gives me the points value which i get from getAttribute method
-            console.log(category);
-            console.log("Clicked grid item textContent:", item.textContent); // log the textContent
-            console.log("Points:", selectedPoints);
-
-            selectedGridItem = item; // this assigns a gridItem the value that it was already chosen and the question answered, which will then leave that especific grid item blank
-          }
-        }
-      });
+    // Check if the item is an unanswered question
+    if (!answeredQuestions.includes(parseInt(item.dataset.questionId))) {
+      // Add a click event listener to the item
+      item.addEventListener("click", () => handleClick(item));
     }
   });
 }
+
 
 // Function to render the scores of each player
 function renderPlayerScores() {
@@ -151,38 +154,56 @@ function renderPlayerScores() {
 // Event listener for guess button
 guessButton.addEventListener("click", (e) => {
   e.preventDefault();
-  const userInput = document.getElementById("input-div").value;
-  if (
-    userInput.trim().toLowerCase() === selectedQuestion.answer.toLowerCase()
-  ) {
-    console.log("Your Answer Is Correct!");
-    console.log(selectedPoints);
-    eachplayersTurn();
-    updateScore(currentPlayerIndex, selectedPoints); // update player's scores
-    renderPlayerScores(); // renders updated scores
-    disableButtons(); // disable buttons after answering
 
-    answeredQuestions.push(selectedQuestion); // pushes answered questions to array []
-    selectedGridItem.textContent = ""; // clears out 
+  // checking for if a question is selected
+  if(selectedQuestion) {
+      const userInput = document.getElementById("input-div").value;
+      if (
+        // retrieves userinput via the input-div ID
+        userInput.trim().toLowerCase() === selectedQuestion.answer.toLowerCase()
+      ) {
+        console.log("Your Answer Is Correct!");
+        console.log(selectedPoints);
+        eachplayersTurn();
+        updateScore(currentPlayerIndex, selectedPoints); // update player's scores
+        renderPlayerScores(); // renders updated scores
+      
+        questionAnswered = false;
+        answeredQuestions = answeredQuestions.filter(
+          (questionId) =>
+            questionId !== (selectedQuestion ? selectedQuestion.id : null)
+        );
+        selectedGridItem.textContent = ""; // clears out
 
-    const remainingQuestions = placeholderQuestions.filter(
-      (question) => !answeredQuestions.includes(question)
-    );
-    if (remainingQuestions.length > 0) {
-      questionAnswered = false;
-      renderQuestions();
+        // clears input field after answering question.
+        document.getElementById("input-div").value = "";
+
+        selectedQuestion = null;
+
+        const remainingQuestions = placeholderQuestions.filter(
+          (question) => !answeredQuestions.includes(question.id)
+        );
+
+        if (remainingQuestions.length > 0) {
+          renderQuestions();
+        } else {
+          console.log("NO more questions remaining!");
+        }
+      } else {
+        console.group("Your Answer is Wrong!!");
+        eachplayersTurn();
+      }
     } else {
-      console.log("NO more questions remaining!");
+      console.log("Please Select a question before answering");
     }
-  } else {
-    console.group("Your Answer is Wrong!!");
-    eachplayersTurn();
-    disableButtons(); // disables buttons after answering
-  }
 });
 
 //calling my functions()
 renderCategories();
 renderQuestions();
 eachplayersTurn();
-enableButtons();
+
+
+
+
+
